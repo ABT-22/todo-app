@@ -15,12 +15,12 @@ function createTaskElement(text, completed = false) {
   const li = document.createElement('li');
   li.textContent = text;
 
+  const actionsDiv = document.createElement('div');
+  actionsDiv.classList.add('actions');
+
   const deleteBtn = document.createElement('button');
   deleteBtn.textContent = 'Eliminar';
-
-  // Para evitar que al hacer clic en el botón también se marque como completada
-  deleteBtn.addEventListener('click', (e) => {
-    e.stopPropagation();
+  deleteBtn.addEventListener('click', () => {
     if (completed) {
       completedTasks = completedTasks.filter(t => t !== text);
     } else {
@@ -31,20 +31,24 @@ function createTaskElement(text, completed = false) {
   });
 
   if (!completed) {
-    li.addEventListener('click', () => {
-      // Mover la tarea de pendientes a completadas
+    const completeBtn = document.createElement('button');
+    completeBtn.textContent = 'Completada';
+    completeBtn.addEventListener('click', () => {
       tasks = tasks.filter(t => t !== text);
       completedTasks.push(text);
       saveTasks();
       render();
     });
+    actionsDiv.appendChild(completeBtn);
   }
+
+  actionsDiv.appendChild(deleteBtn);
+  li.appendChild(actionsDiv);
 
   if (completed) {
     li.classList.add('completed');
   }
 
-  li.appendChild(deleteBtn);
   return li;
 }
 
