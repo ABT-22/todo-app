@@ -33,11 +33,6 @@ Permite añadir, marcar como completadas y eliminar tareas, con almacenamiento l
 
 ## 📸 Captura
 
-![Captura de pantalla de la app](./screenshot.png)  
-
-*(Incluye aquí una captura de pantalla de tu app, ponla en la carpeta y nómbrala `screenshot.png`)*
-
----
 
 ## 📄 Licencia
 
@@ -47,10 +42,6 @@ Este proyecto está bajo la licencia MIT. Puedes usarlo libremente para aprender
 
 ## ✉️ Contacto
 
-Si quieres saber más o colaborar, puedes contactarme en:  
-[tuemail@ejemplo.com](mailto:tuemail@ejemplo.com)  
-[https://github.com/tuusuario](https://github.com/tuusuario)
 
----
 
 ¡Gracias por visitar este proyecto!
