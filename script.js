@@ -1,69 +1,74 @@
-const input = document.getElementById("tareaInput");
-const boton = document.getElementById("agregarBtn");
-const lista = document.getElementById("listaTareas");
+const taskInput = document.getElementById('task-input');
+const addButton = document.getElementById('add-button');
+const taskList = document.getElementById('task-list');
+const completedList = document.getElementById('completed-list');
 
-// 🔁 Función para guardar tareas en localStorage
-function guardarTareas() {
-  const tareas = [];
-  lista.querySelectorAll("li").forEach(li => {
-    tareas.push({
-      texto: li.querySelector("span").textContent,
-      completada: li.classList.contains("completada")
+let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+let completedTasks = JSON.parse(localStorage.getItem('completedTasks')) || [];
+
+function saveTasks() {
+  localStorage.setItem('tasks', JSON.stringify(tasks));
+  localStorage.setItem('completedTasks', JSON.stringify(completedTasks));
+}
+
+function createTaskElement(text, completed = false) {
+  const li = document.createElement('li');
+  li.textContent = text;
+
+  const deleteBtn = document.createElement('button');
+  deleteBtn.textContent = 'Eliminar';
+
+  // Para evitar que al hacer clic en el botón también se marque como completada
+  deleteBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (completed) {
+      completedTasks = completedTasks.filter(t => t !== text);
+    } else {
+      tasks = tasks.filter(t => t !== text);
+    }
+    saveTasks();
+    render();
+  });
+
+  if (!completed) {
+    li.addEventListener('click', () => {
+      // Mover la tarea de pendientes a completadas
+      tasks = tasks.filter(t => t !== text);
+      completedTasks.push(text);
+      saveTasks();
+      render();
     });
-  });
-  localStorage.setItem("tareas", JSON.stringify(tareas));
+  }
+
+  if (completed) {
+    li.classList.add('completed');
+  }
+
+  li.appendChild(deleteBtn);
+  return li;
 }
 
-// 📦 Función para cargar tareas al iniciar
-function cargarTareas() {
-  const tareasGuardadas = JSON.parse(localStorage.getItem("tareas"));
-  if (!tareasGuardadas) return;
+function render() {
+  taskList.innerHTML = '';
+  completedList.innerHTML = '';
 
-  tareasGuardadas.forEach(tarea => {
-    crearTarea(tarea.texto, tarea.completada);
+  tasks.forEach(task => {
+    taskList.appendChild(createTaskElement(task, false));
+  });
+
+  completedTasks.forEach(task => {
+    completedList.appendChild(createTaskElement(task, true));
   });
 }
 
-// 🧱 Función que crea una tarea y la añade a la lista
-function crearTarea(texto, estaCompletada = false) {
-  const li = document.createElement("li");
-
-  if (estaCompletada) li.classList.add("completada");
-
-  const spanTexto = document.createElement("span");
-  spanTexto.textContent = texto;
-
-  const btnEliminar = document.createElement("button");
-  btnEliminar.textContent = "❌";
-  btnEliminar.style.marginLeft = "10px";
-
-  // ✅ Completar tarea
-  spanTexto.addEventListener("click", () => {
-    li.classList.toggle("completada");
-    guardarTareas();
-  });
-
-  // ❌ Eliminar tarea
-  btnEliminar.addEventListener("click", () => {
-    lista.removeChild(li);
-    guardarTareas();
-  });
-
-  li.appendChild(spanTexto);
-  li.appendChild(btnEliminar);
-  lista.appendChild(li);
-}
-
-// 🎯 Evento para agregar nueva tarea
-boton.addEventListener("click", () => {
-  const texto = input.value.trim();
-  if (texto === "") return;
-
-  crearTarea(texto);
-  guardarTareas();
-  input.value = "";
-  input.focus();
+addButton.addEventListener('click', () => {
+  const text = taskInput.value.trim();
+  if (text !== '') {
+    tasks.push(text);
+    taskInput.value = '';
+    saveTasks();
+    render();
+  }
 });
 
-// 🔁 Cargar tareas guardadas al iniciar
-cargarTareas();
+render();
